@@ -49,9 +49,9 @@ public class IndexController {
     @ResponseBody
     public ResponseEntity<Result<Map<String, Object>>> apiIndex() {
         Map<String, Object> data = new LinkedHashMap<>();
-        data.put("frontendUrl", "http://localhost:5173");
-        data.put("backendPageUrl", "http://localhost:8080");
-        data.put("apiBaseUrl", "http://localhost:8080/api");
+        data.put("frontendUrl", "http://127.0.0.1:8080");
+        data.put("backendPageUrl", "http://127.0.0.1:8080");
+        data.put("apiBaseUrl", "http://127.0.0.1:8080/api");
         data.put("exampleEndpoints", new String[]{
                 "/api/auth/login",
                 "/api/products",

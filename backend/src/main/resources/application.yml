@@ -6,7 +6,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/shopping_platform?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: wd1234
+    password: 123
   servlet:
     multipart:
       max-file-size: 20MB
@@ -16,6 +16,7 @@ spring:
     time-zone: GMT+8
 
 app:
+  frontend-dist: src/main/resources/static
   # 任意电脑运行后端后，自动在当前电脑打开项目网页；如需关闭可设为 false
   auto-open-browser: true
   jwt:

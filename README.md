@@ -173,7 +173,8 @@ npm install
 npm run dev
 ```
 
-浏览器访问：`http://localhost:5173`。
+日常预览请先执行前端构建，再启动后端，浏览器访问：`http://127.0.0.1:8080`。
+开发调试时可运行 `npm run dev`，Vite 固定使用 `http://127.0.0.1:5174`。
 
 ### 4. 默认账号
 
@@ -188,9 +189,10 @@ npm run dev
 ## 八、构建与运行说明
 
 ### 前端
-- 开发：`npm run dev`（端口 5173）
+- 日常预览：`npm run build` 后由后端托管，访问 `http://127.0.0.1:8080`
+- 开发：`npm run dev`（固定端口 5174）
 - 构建：`npm run build`
-- 产物目录：`frontend/dist/`
+- 产物目录：构建输出到 `backend/src/main/resources/static/`
 
 ### 后端
 - 构建打包：`mvn clean package`
@@ -198,7 +200,7 @@ npm run dev
 - 运行：`mvn spring-boot:run` 或 `java -jar target/*.jar`（端口 8080）
 
 ### 其它
-- 后端接口地址：`http://localhost:8080`
+- 后端接口地址：`http://127.0.0.1:8080`
 - 前端开发代理：`/api` 与 `/uploads` 自动代理到后端
 - API 基地址可用环境变量 `VITE_API_BASE_URL` 覆盖（默认 `/api`）
 - 商品图片上传到后端运行目录下的 `uploads/`，经 `/uploads/**` 对外提供

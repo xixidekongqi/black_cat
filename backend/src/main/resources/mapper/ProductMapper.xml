@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shop.mapper.ProductMapper">
+
+    <select id="searchProductsDynamic" resultType="com.shop.entity.Product">
+        SELECT * FROM product
+        <where>
+            <if test="name != null and name != ''">
+                <!-- 注意这里：把 name 改成了 title -->
+                AND title LIKE CONCAT('%', #{name}, '%')
+            </if>
+
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+
+            <if test="listed != null">
+                AND listed = #{listed}
+            </if>
+        </where>
+    </select>
+    <!-- 练习 2：使用 choose(when, otherwise) 实现动态排序 -->
+    <select id="searchProductsWithSort" resultType="com.shop.entity.Product">
+        SELECT * FROM product
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND title LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+        </where>
+        <!-- 根据传入的 sortBy 决定怎么排序 -->
+        <choose>
+            <when test="sortBy == 'price_asc'">
+                ORDER BY price ASC
+            </when>
+            <when test="sortBy == 'price_desc'">
+                ORDER BY price DESC
+            </when>
+            <!-- 其他情况（或者没传），默认按 ID 倒序 -->
+            <otherwise>
+                ORDER BY id DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 练习 3：使用 set 标签实现动态更新 -->
+    <update id="updateProductSelective">
+        UPDATE product
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+    <!-- 练习 4：使用 foreach 实现批量查询（例如：查询 ID 为 1, 2, 3 的商品） -->
+    <select id="selectByIds" resultType="com.shop.entity.Product">
+        SELECT * FROM product
+        WHERE id IN
+        <!-- collection="ids"：对应 @Param 传进来的名字
+             item="id"：遍历出来的每个元素叫 id
+             open="(" close=")"：在拼接的字符串前后加上括号
+             separator=","：每个元素之间用逗号隔开 -->
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <!-- 练习 6：对比 #{} 预编译与 ${} 字符串拼接 -->
+    <!-- 注意：${} 方式不能防止 SQL 注入，这里仅作演示 -->
+    <select id="searchWithOrderBy" resultType="com.shop.entity.Product">
+        SELECT * FROM product
+        <!-- 使用 ${} 直接拼接排序字段名（因为列名不能被 ? 替代） -->
+        ORDER BY ${orderByField} DESC
+    </select>
+    <!-- 练习 7：显式结果映射 -->
+    <resultMap id="ProductMap" type="com.shop.entity.Product">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <!-- 把数据库的 product_price 映射到 Java 的 price 属性 -->
+        <result column="product_price" property="price"/>
+    </resultMap>
+
+    <select id="selectWithMap" resultMap="ProductMap">
+        SELECT * FROM product WHERE id = #{id}
+    </select>
+    <!-- 练习：插入商品并回填主键 ID -->
+    <!-- 注意：如果你的 product 表有其他非空字段，请一并加上，这里只演示基础用法 -->
+    <insert id="insertProduct" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO product (title, price, category_id, listed, seller_id, description, cover_image)
+        VALUES (#{title}, #{price}, #{categoryId}, #{listed}, #{sellerId}, #{description}, #{coverImage})
+    </insert>
+    <!-- 定义一个可复用的 SQL 片段 -->
+    <sql id="Base_Column_List">
+        id, title, price, category_id, listed
+    </sql>
+
+    <!-- 使用 include 标签引入片段 -->
+    <select id="selectSimpleInfo" resultType="com.shop.entity.Product">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM product WHERE id = #{id}
+    </select>
+    <!-- 批量删除 -->
+    <delete id="deleteByIds">
+        DELETE FROM product WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
